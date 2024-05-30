@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useStateContext } from '../context'
 import DisplayCampaigns from '../components/DisplayCampaigns';
 
-function Profile() {
+function DisplayCampaignsById() {
 
   const [isLoading, setisLoading] = useState(false);
   const [campaigns, setCampaigns] = useState([])
@@ -36,4 +36,4 @@ function Profile() {
   )
 }
 
-export default Profile
+export default DisplayCampaignsById

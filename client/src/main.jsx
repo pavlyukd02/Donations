@@ -8,6 +8,7 @@ import { StateContextProvider } from './context';
 import { Sepolia } from '@thirdweb-dev/chains'
 import App from './App';
 import './index.css';
+import ScrollToTop from './utils/ScrollToTop';
 
 
 
@@ -17,9 +18,11 @@ root.render(
         clientId='76691636691ae12e487e74fc4699e2aa'
         activeChain={Sepolia}>
         <Router>
-            <StateContextProvider>
-                <App />
-            </StateContextProvider>
+            <ScrollToTop>
+                <StateContextProvider>
+                    <App />
+                </StateContextProvider>
+            </ScrollToTop>
         </Router>
 
     </ThirdwebProvider >

@@ -1,107 +1,88 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStateContext } from '../context';
+import { logo, thirdweb, eth_logo } from "../assets";
+import { CustomButton } from '../containers';
 
-import { logo, menu, search, thirdweb } from "../assets";
-import { navlinks } from '../constants'
-import { CustomButton } from './';
-
-import {metamaskWallet } from '@thirdweb-dev/react';
+import { metamaskWallet, ConnectWallet } from '@thirdweb-dev/react';
 
 const Navbar = () => {
+  const { address, connect, disconnect, balance } = useStateContext();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const [isActive, setIsActive] = useState('dashboard');
-  const [toggleDrawer, setToggleDrawer] = useState(false);
 
-  const metamaskConfig=metamaskWallet();
-  const { connect, address } = useStateContext();
+  const handleConnect = async () => {
+    if (address) {
+      setIsDropdownOpen(!isDropdownOpen);
+    } else {
+      await connect();
+    }
+  };
+
+  const handleDashboard = () => {
+    setIsDropdownOpen(false);
+    navigate('/dashboard');
+  };
+  function truncateAddress(address) {
+    return address.slice(0, 32) + '...';
+  }
 
   return (
-    <div className="flex md:flex-row flex-col-reverse justify-between mb-[35px] gap-6">
-      <div className="lg:flex-1 flex flex-row max-w-[458px] py-2 pl-4 pr-2 h-[52px] bg-[#1c1c24] rounded-[100px]">
-        <input type="text" placeholder="Search for campaigns" className="flex w-full font-epilogue
-         font-normal text-[14px] placeholder:text-[#4b5264] text-white bg-transparent outline-none" />
-
-        <div className="w-[72px] h-full rounded-[20px] bg-[#4acd8d] flex justify-center items-center cursor-pointer">
-          <img src={search} alt="search" className="w-[15px] h-[15px] object-contain" />
+    <nav className="flex justify-between items-center px-[80px]  relative">
+      <Link to="/">
+        <div className='w-[52px] h-[52px] rounded-full flex justify-center items-center cursor-pointer'>
+          <img src={logo} alt="profile" className='w-[100%] h-[100%] object-contain hover:drop-shadow-2xl ' />
         </div>
-      </div>
-
-      <div className="sm:flex hidden flex-row justify-end gap-4 ">
+      </Link>
+      <div className="flex items-center space-x-10 text-white text-[16px] font-montserrat font-medium ">
+        <div className='flex gap-5 select-none cursor-pointer' >
+          <div className='hover:drop-shadow-2xl '>Фонди</div>
+          <div className='hover:drop-shadow-2xl'>Як це працює</div>
+          <div className='hover:drop-shadow-xl'>Про нас</div>
+        </div>
         <CustomButton
           btnType="button"
-          title={address ? 'Create a campaign' : 'Connect'}
-          styles={address ? 'bg-[#1dc071]' : 'bg-[#8c6dfd]'}
-          handleClick={() => {
-            if (address) navigate('create-campaign')
-            else connect(metamaskConfig)
-          }}
+          title={address ? 'Профіль' : 'Підключити гаманець'}
+          styles={address ? 'bg-[#1dc071] shadow-md hover:drop-shadow-xl select-none   ' : 'btn-gradient shadow-md hover:drop-shadow-xl  select-none '}
+          handleClick={handleConnect}
         />
-        <Link to="./profile">
-          <div className='w-[52px] h-[52px] rounded-full bg-[#2c2f32] flex justify-center items-center 
-          cursor-pointer '>
-            <img src={thirdweb} alt="profile" className='w-[60%] h-[60%] object-contain' />
-          </div>
-        </Link>
-      </div>
-
-      {/* Small screen navigation  */}
-      <div className='sm:hidden flex justify-between items-center relative' >
-        <div className='w-[40px] h-[40px] rounded-[10px] bg-[#2c2f32] flex justify-center items-center 
-          cursor-pointer '>
-          <img src={logo} alt="profile" className='w-[60%] h-[60%] object-contain' />
-        </div>
-        <img
-          src={menu}
-          alt='menu'
-          className='w-[34px] h-[34px] object-contain cursor-pointer '
-          onClick={() => setToggleDrawer((prev) => !prev)}
-        />
-        <div className={` absolute top-[60px] right-0 left-0 bg-[#1c1c24] z-10 shadow-secondary py-4
-         ${!toggleDrawer ? '-translate-y-[100vh]' : 'translate-y-0'}  transition-all duration-1000`}>
-          <ul className='mb-4'>
-            {navlinks.map((Link) => (
-              <li
-                key={Link.name}
-                className={`flex p-4 ${isActive === Link.name && 'bg-[#3a3a43]'}`}
-                onClick={() => {
-                  setIsActive(Link.name);
-                  setToggleDrawer(false);
-                  navigate(Link.link)
-                }}
-              >
-                <img
-                  src={Link.imgUrl}
-                  alt={Link.name}
-                  className={`w-[24px] h-[24px] object-contain ${isActive === Link.name ? 'grayscale-0' : 'grayscale'}`}
+        {isDropdownOpen && address && (
+          <div className="fixed top-[85px] right-[4.86vw]  w-[25vw] select-none bg-gradient-to-t from-[#907cc0] 
+          to-[rgba(221,213,241,0.75)] backdrop-blur-[4.5px] 
+          p-[15px] gap-[20px] rounded-[8px] shadow-[0px_4px_23px_4px_rgba(0,0,0,0.13)] animate-ubslidein ">
+            <div className="px-4 py-2 flex flex-col gap-6">
+              <div className='flex items-center gap-3 shadow-xl rounded-xl p-2 '>
+                <img src={thirdweb} alt="" className='w-[40px] h-[40px] ' />
+                <div className=''>
+                  <p className="text-gray-300 uppercase font-bold ">Гаманець:</p>
+                  <p className="text-white truncate ">{truncateAddress(address)}</p>
+                </div>
+              </div>
+              <div className='border-b border-gray-300'></div>
+              <div>
+                <CustomButton
+                  btnType="button"
+                  title="Мої фонди"
+                  styles="btn-gradient upperca w-full text-gray-300 shadow-xl tracking-wider font-normal "
+                  handleClick={handleDashboard}
                 />
 
-                <p className={`ml-[20px] font-epilogue  font-semibold text-[14px] 
-                ${isActive === Link.name ? 'text-[#1dc071]' : 'text-[#808191]'}`}>
-                  {Link.name}
-                </p>
-
-              </li>
-
-            ))}
-          </ul>
-          <div className='flex mx-4'>
-            <CustomButton
-              btnType="button"
-              title={address ? 'Create a campaign' : 'Connect'}
-              styles={address ? 'bg-[#1dc071]' : 'bg-[#8c6dfd]'}
-              handleClick={() => {
-                if (address) navigate('create-campaign')
-                else connect(metamaskConfig)
-              }}
-            />
+              </div>
+              <div className='border-b border-gray-300'></div>
+              <div className='flex items-center gap-3 shadow-xl rounded-xl p-2'>
+                <img src={eth_logo} alt="" className='w-[40px] h-[40px] ' />
+                <div>
+                  <p className="text-gray-300 uppercase font-bold ">Баланс:</p>
+                  <p className="text-white truncate ">{balance}</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
-    </div >
+    </nav>
+  );
+};
 
-  )
-}
-
-export default Navbar
+export default Navbar;
