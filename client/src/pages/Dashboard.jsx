@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useStateContext } from '../context';
 import { daysLeft } from '../utils';
 import { Navbar } from '../components';
@@ -8,14 +8,10 @@ const Dashboard = () => {
     const [isLoading, setisLoading] = useState(false);
     const [campaigns, setCampaigns] = useState([]);
     const { address, contract, getUserCampaigns, closeCampaign } = useStateContext();
-
-    const { state } = useLocation();
-
     const navigate = useNavigate();
 
-
     const handleNavigate = (campaign) => {
-        navigate(`/update-project/${campaign.pId}`, { state: campaign })
+        navigate(`/update-project/${campaign.id}`, { state: campaign });
     }
 
     const fetchCampaigns = async () => {
@@ -29,14 +25,10 @@ const Dashboard = () => {
         if (contract) fetchCampaigns();
     }, [address, contract]);
 
-
-
-    const handleDelete = async (pId) => {
+    const handleDelete = async (id) => {
         try {
-            console.log("Closing campaign with ID:", pId);
-            await closeCampaign(pId);
-            console.log("Campaign closed successfully");
-            setCampaigns(campaigns.filter(campaign => campaign.pId !== pId));
+            await closeCampaign(id);
+            setCampaigns(campaigns.filter(campaign => campaign.id !== id));
         } catch (error) {
             console.error("Failed to close campaign:", error);
         }
@@ -89,21 +81,21 @@ const Dashboard = () => {
                             </thead>
                             <tbody>
                                 {campaigns.map((campaign) => (
-                                    <tr key={campaign.pId} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <tr key={campaign.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                                         <td className="px-6 py-4">
                                             <img src={campaign.image} alt={campaign.title} className="w-16 h-16 object-cover rounded" />
                                         </td>
                                         <td className="px-6 py-4">{campaign.title}</td>
                                         <td className="px-6 py-4">{campaign.status || 'Active'}</td>
                                         <td className="px-6 py-4">{daysLeft(campaign.deadline)}</td>
-                                        <td className="px-6 py-4">{campaign.amountCollected}</td>
+                                        <td className="px-6 py-4">{campaign.amountCollected - campaign.withdrawedAmount}</td>
                                         <td className="px-6 py-4">
                                             <div className='flex flex-row gap-4'>
                                                 <div>
                                                     <button className='hover:text-green-500 translate hover:scale-110 hover:font-semibold' onClick={() => handleNavigate(campaign)}>Edit</button>
                                                 </div>
                                                 <div>
-                                                    <button className='hover:text-red-500 translate hover:scale-110 hover:font-semibold' onClick={() => handleDelete(campaign.pId)}>Delete</button>
+                                                    <button className='hover:text-red-500 translate hover:scale-110 hover:font-semibold' onClick={() => handleDelete(campaign.id)}>Delete</button>
                                                 </div>
                                             </div>
                                         </td>

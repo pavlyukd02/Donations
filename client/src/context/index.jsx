@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
-  const { contract } = useContract('0x6881999E8e717f3b4dc6f4Ad2BB183dDB356550c');
+  const { contract } = useContract('0xc191dEE315062E20413805cA94069Bc2E9344439');
   const { mutateAsync: createCompaign } = useContractWrite(contract, 'createCampaign');
   const { mutateAsync: updateForm } = useContractWrite(contract, 'updateCampaign');
   const { mutateAsync: doWithdraw } = useContractWrite(contract, 'withdraw');
@@ -27,7 +27,6 @@ export const StateContextProvider = ({ children }) => {
     if (address) fetchBalance();
   }, [address]);
 
-
   const getWithdraw = async (pId, amount) => {
     try {
       const data = await doWithdraw({
@@ -37,7 +36,8 @@ export const StateContextProvider = ({ children }) => {
     } catch (error) {
       console.log("Withdraw failure", error);
     }
-  }
+  };
+
   const publishCampaign = async (form) => {
     try {
       const data = await createCompaign({
@@ -45,9 +45,9 @@ export const StateContextProvider = ({ children }) => {
           form.name, // owner
           form.title, // title
           form.description,
-          form.imageUrl,// description
+          form.imageUrl, // description
           form.target,
-          new Date(form.deadline).getTime(), // deadline,
+          new Date(form.deadline).getTime(), // deadline
         ],
       });
 
@@ -75,8 +75,8 @@ export const StateContextProvider = ({ children }) => {
           form.name, // owner
           form.title, // title
           form.description,
-          form.imageUrl,// description
-          new Date(form.deadline).getTime(), // deadline,
+          form.imageUrl, // description
+          new Date(form.deadline).getTime(), // deadline
         ],
       });
     } catch (error) {
@@ -89,8 +89,9 @@ export const StateContextProvider = ({ children }) => {
       const campaigns = await contract.call('getCampaigns');
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const parsedCampaigns = campaigns
-        .filter(campaign => campaign.deadline > currentTimestamp) 
-        .map((campaign, i) => ({
+        .filter(campaign => campaign.deadline > currentTimestamp)
+        .map((campaign) => ({
+          id: campaign.id.toNumber(),
           owner: campaign.owner,
           name: campaign.name,
           title: campaign.title,
@@ -100,11 +101,19 @@ export const StateContextProvider = ({ children }) => {
           amountCollected: ethers.utils.formatEther(campaign.collectedAmount.toString()),
           withdrawedAmount: ethers.utils.formatEther(campaign.withdrawedAmount.toString()),
           image: campaign.imageUrl,
-          pId: i
         }));
       return parsedCampaigns;
     } catch (error) {
       console.error("Error in getCampaigns:", error);
+    }
+  };
+
+  const getCampaignById = async (id) => {
+    try {
+      const campaigns = await getCampaigns();
+      return campaigns.find(campaign => campaign.id === parseInt(id));
+    } catch (error) {
+      console.error("Error in getCampaignById:", error);
     }
   };
 
@@ -151,8 +160,9 @@ export const StateContextProvider = ({ children }) => {
         donate,
         getDonations,
         updateCampaign,
-        getWithdraw, 
-        closeCampaign
+        getWithdraw,
+        closeCampaign,
+        getCampaignById, // Добавляем функцию сюда
       }}
     >
       {children}

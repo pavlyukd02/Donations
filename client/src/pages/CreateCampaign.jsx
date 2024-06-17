@@ -9,7 +9,7 @@ import { useStateContext } from '../context';
 import { money } from '../assets';
 import { CustomButton, FormField } from '../containers';
 import { checkIfImage } from '../utils'
-import { Navbar } from '../components';
+import { Loader, Navbar } from '../components';
 
 
 const CreateCampaign = () => {
@@ -60,10 +60,10 @@ const CreateCampaign = () => {
         <Navbar />
       </div>
 
-
+      {isLoading && <Loader />}
       <div className='bg-[#ffffff] flex justify-center  items-center flex-col
      rounded-[30px] sm:px-20  sm:py-10 p-4 sm:mx-[370px]  my-10 drop-shadow-2xl  '>
-        {isLoading && 'Loader..'}
+
         <div className='flex justify-center items-center p-[16px] sm:min-w-[380px] bg-[#3a3a43] rounded-[10px]'>
           <h1 className=' font-montserrat font-bold sm:text-[25px] text-[18px] 
         leading-[38px] text-white  select-none' >

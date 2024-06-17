@@ -34,7 +34,7 @@ const AllCampaigns = () => {
     return (
         <div>
 
-            <div className='p-4 bg-slate-900'>
+            <div className='bg-[#5C2E2E] p-4'>
                 <Navbar />
             </div>
 

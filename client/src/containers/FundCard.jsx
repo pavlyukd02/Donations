@@ -17,7 +17,7 @@ const FundCard = ({ owner, title, description, target, deadline, amountCollected
                     <img src={tagType} alt="tag" className='w-[17px] h-[17px] object-contain' />
                     <p className='ml-[12px] mt-[2px] font-epilogue 
                 font-medium text-[12px] text-[#808191]'>
-                        Education
+                        Благодійнйі фонди
                     </p>
 
                 </div>
@@ -39,7 +39,7 @@ const FundCard = ({ owner, title, description, target, deadline, amountCollected
                         </h4>
                         <p className='mt-[3px]  font-epilogue font-normal text-[12px] leading-[18px] 
                         text-[#808191] sm: max-w-[120px]  truncate'>
-                            Raised of {target}
+                            Зібрано {target}
                         </p>
                     </div>
                     <div className='flex flex-col'>

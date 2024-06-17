@@ -1,11 +1,12 @@
 import { Link, useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useStateContext } from '../context';
-import { Header, Navbar } from '../components';
+import { Navbar } from '../components';
 
 const Withdraw = () => {
     const [amount, setAmount] = useState('');
     const [selectedCampaignId, setSelectedCampaignId] = useState('');
+    const [selectedCampaign, setSelectedCampaign] = useState(null);
     const { getWithdraw, address, contract, getUserCampaigns } = useStateContext();
 
     const { id } = useParams();
@@ -19,23 +20,28 @@ const Withdraw = () => {
         setAmount(''); // Очистить поле ввода после выполнения вывода
     };
 
-    const [isLoading, setisLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [campaigns, setCampaigns] = useState([]);
 
     const fetchCampaigns = async () => {
-        setisLoading(true);
+        setIsLoading(true);
         const data = await getUserCampaigns();
         setCampaigns(data);
-        setisLoading(false);
+        setIsLoading(false);
     };
 
     useEffect(() => {
         if (contract) fetchCampaigns();
     }, [address, contract]);
 
+    useEffect(() => {
+        if (selectedCampaignId) {
+            const campaign = campaigns.find(c => c.id === selectedCampaignId);
+            setSelectedCampaign(campaign);
+        }
+    }, [selectedCampaignId, campaigns]);
+
     return (
-
-
         <div className="">
             <div className='bg-[#5C2E2E] p-4'>
                 <Navbar />
@@ -66,10 +72,10 @@ const Withdraw = () => {
                     </div>
                 </aside>
 
-                <main className='flex-1 px-14 py-10  bg-gray-100'>
-                <h1 className="text-3xl font-bold mb-6">Вивід грошей</h1>
-                    <div className=" p-4 shadow-2xl drop-shadow-2xl rounded-xl w-[50%]">
-                        <h2 className="text-black text-lg  font-semibold mb-4">Виведіть збереження</h2>
+                <main className='flex-1 px-14 py-10 bg-gray-100'>
+                    <h1 className="text-3xl font-bold mb-6">Вивід грошей</h1>
+                    <div className="p-4 shadow-2xl rounded-xl w-[50%]">
+                        <h2 className="text-black text-lg font-semibold mb-4">Виведіть збереження</h2>
                         <select
                             value={selectedCampaignId}
                             onChange={(e) => setSelectedCampaignId(e.target.value)}
@@ -77,8 +83,8 @@ const Withdraw = () => {
                         >
                             <option value="">Виберіть фонд</option>
                             {campaigns.map((campaign) => (
-                                <option key={campaign.pId} value={campaign.pId}>
-                                    {campaign.title} (ID: {campaign.pId}) ETH: {campaign.withdrawedAmount}
+                                <option key={campaign.id} value={campaign.id}>
+                                    {campaign.title} (ID: {campaign.id}) ETH: {campaign.amountCollected - campaign.withdrawedAmount}
                                 </option>
                             ))}
                         </select>
@@ -95,6 +101,12 @@ const Withdraw = () => {
                         >
                             Вивести
                         </button>
+                        {selectedCampaign && (
+                            <div className="mt-4 text-black">
+                                <p>Всього зібрано: {selectedCampaign.amountCollected} ETH</p>
+                                <p>Доступно для виводу: {selectedCampaign.amountCollected - selectedCampaign.withdrawedAmount} ETH</p>
+                            </div>
+                        )}
                     </div>
                 </main>
             </div>
